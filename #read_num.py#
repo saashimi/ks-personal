@@ -17,8 +17,7 @@ def main():
     while value != 0:
         lst1 += [value]
         value = read_num()
-    printOutput(lst1)  
-
-##   
+    printOutput(lst1)     
+#
 
 main()
