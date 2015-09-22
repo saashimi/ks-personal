@@ -1,0 +1,7 @@
+lst = ['a', 'b', 'c', 'd', 'e', 'f']
+lst1 = []
+for item in range(5):
+    combi = lst[item] * lst[item]
+    lst1.append(combi)
+
+print(lst1)
