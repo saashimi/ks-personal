@@ -1,5 +1,6 @@
 #pin_convert.py: Contains the functions convert_pin() and convert_word(),
-#which convert integers to readable consonant-vowel strings and back again.  
+#which convert integers to readable consonant-vowel strings and back again.
+#Usage: import in python interpreter.
 
 __author__    = "Kevin Saavedra"
 
