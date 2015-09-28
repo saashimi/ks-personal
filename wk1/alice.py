@@ -6,32 +6,20 @@ def open_file():
     print("Opened " + filename)
     return open_text 
 
-def parse_file(blarg):
+def parse_file(input_lst):
     word_lst = []
-    for line in blarg:
+    for line in input_lst:
         raw_output = line.split() # these are lists of strings
         for str_ in raw_output: # strings
-            #a = str_.lower()
+            str_ = str_.lower()
             word_lst.append(str_)
     return word_lst
 
-"""def lst_cleaner(input_):
-    clean_lst = []
-    remove = ".?!-\'\"*\,()[]:#\/;"
-    for item in input_:
-        temp_str = ""
-        for char in item:
-            if char not in remove:
-                clean_str = ""
-                clean_str += char
-            temp_str += clean_str
-            clean_lst.append(temp_str)
-    return clean_lst
-"""
-def lst_cleaner(input_):
+"""def lst_cleaner(parsed_lst):
     clean_lst = {}
-    remove = ".?!-\'\"*\,()[]:#\/;"
-    for item in input_:
+    #remove = ".?!-\'\"*\,()[]:#\/;"
+    remove = ".?!,\'\""
+    for item in parsed_lst:
         temp_str = ""
         for char in item:
             if char not in remove:
@@ -40,15 +28,8 @@ def lst_cleaner(input_):
             temp_str += clean_str
             clean_lst[temp_str] = 0
     return clean_lst
+"""
 
-    """for item in input:
-        if item not in remove:
-            clean_str += item
-        item = clean_str
-    clean_lst.append(item)
-    return clean_lst
-    """
-    
 def search_dict(dct):
     """input: a dictionary with keys and 1 values.
        output: a dictionary with keys and counted value
@@ -56,23 +37,21 @@ def search_dict(dct):
     final_dct = {}
     for word in dct:
         if word in dct:
-            final_dct[word] = final_dct.get(word, 1) + 1
+            final_dct[word] = final_dct.get(word, 0) + 1
         else:
             final_dct.get(word, 1)
     return final_dct    
 
 
 def main():
-    foo = open_file()
-    bar = parse_file(foo)
-    #print(bar)
-    woo = lst_cleaner(bar)
-    print(woo)
-    #foo1 = search_dict(bar)
-#for counts in foo1.values():
-#    counts.sort(reverse = True)
-    #print(foo1)
-    
+    import operator
+    init_file = open_file()
+    opened_file = parse_file(init_file)
+    #scanned = lst_cleaner(opened_file)
+    to_search = search_dict(opened_file)
+    final = sorted(to_search.items(), key = operator.itemgetter(1), reverse = True )
+    print(final)
+        
 """Unit Tests"""
 
 def unit_tests():
