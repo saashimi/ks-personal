@@ -1,0 +1,17 @@
+# A program to obtain a list of prime numbers.
+
+def list_primes(n):
+"""Takes a list of numbers and returns a list of prime numbers up to the 
+input number.
+"""
+    lst = []
+    for num in range(2, n + 1): # Range starts at 2 to avoid 0/0 error.
+                                # Ends at n+1 because range is inclusive
+        for denominators in range(2, num):
+            if num % denominator == 0:  
+                break
+        else:
+            lst.append(num)
+              
+    return lst
+        

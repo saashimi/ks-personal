@@ -28,8 +28,6 @@ def search_dict(dct):
     for word in dct:
         if word in dct:
             final_dct[word] = final_dct.get(word, 0) + 1
-        #else:
-            #final_dct[word] = final_dct.get(word, 1)
     return final_dct    
 
 def main():
