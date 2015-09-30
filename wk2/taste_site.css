@@ -1,0 +1,52 @@
+body{
+background-color: #B0C4DE;
+}
+
+h1{
+font-weight: bold;
+font-size:100%;
+} 
+
+h2{
+font-family: Arial, Calibri, FreeSans;
+color: White;
+font-weight: 200;
+text-align: center;
+background-color: #008B8B;
+}
+
+h3{
+font-family:;
+background-color: #FF8C00; 	
+}
+
+head{
+
+}
+
+#header{
+background-color: #008B8B;
+}
+
+#titlebar{
+padding:1em;
+}
+
+#nav, ul, {
+float: right;
+list-style:none;
+background-color: #008B8B;
+}
+
+li{
+display: inline;
+margin:0;
+padding:0;
+}
+
+#form{
+float: left;
+width: 200px;
+background-color: white;
+padding-left: 1em;
+}
