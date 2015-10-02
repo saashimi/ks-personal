@@ -47,7 +47,7 @@ def compress_string(string):
               
         final_lst = ''.join(str(str_index) for str_index in comp_lst)
 
-        if len(final_lst) <= len(lst): # If final length equals the final 
+        if len(final_lst) == len(lst): # If final length equals the final 
                                        # compressed length, defers to the
                                        # original string.
             strg_lst = ''.join(str(str_index) for str_index in lst)
