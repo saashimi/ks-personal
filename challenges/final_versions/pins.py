@@ -99,7 +99,7 @@ def convert_word(word):
     Example:
     --------
     'lohi' --> 4327
-    'canosi' --> 2055372    
+    'bicanosi' --> 2055372    
     
     Parameters
     ----------
@@ -150,7 +150,8 @@ def convert_word(word):
         if item < 10: # In order to create a two-digit number for 
                       # numbers <10, we need to insert a '0' 
                       # in front of the digit.
-            item = '0' + str(item) 
+            item = '0' + str(item)
+            final_lst.append(item) 
         else:
             final_lst.append(item)
     
