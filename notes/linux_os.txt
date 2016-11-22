@@ -1,0 +1,5 @@
+#delete all backup files (ending in ~):
+find . -type f -name '*~' -print0 | xargs -0 git rm --cached -r --
+
+#delete all pycache files:
+find . -type d -name '__pycache__' -print0 | xargs -0 git rm --cached -r --

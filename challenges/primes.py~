@@ -1,0 +1,13 @@
+
+def list_primes(n):
+    lst = []
+    for num in range(2, n + 1):
+        for number in range(2, num):
+            if num % number == 0:
+                break
+        else:
+            lst.append(num)
+                
+    
+    return lst
+        
