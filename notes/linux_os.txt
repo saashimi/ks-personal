@@ -15,3 +15,4 @@ Remove the forward words for example, if you are middle of the command: Ctrl+K
 Remove characters on the left, until the beginning of the word: Ctrl+W
 To clear your entire command prompt: Ctrl + L
 Toggle between the start of line and current cursor position: Ctrl + XX
+DELETE FIRST WORD in line: Alt + D
