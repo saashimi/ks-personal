@@ -5,3 +5,7 @@ CSV workflow
 -reindex df by crosslist
 
 Row by row
+
+crosslist.Actual_Enrl.sum() gives us the total number of students in the class
+
+There's already a % capacity for classes!
