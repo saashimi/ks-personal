@@ -5,10 +5,10 @@ A script that calculates csv files generated from DATAMASTER.
 
 import pandas as pd
 
+csv_files = []
+
 pd.set_option('display.max_rows', 0)
-
 df = pd.read_csv('CLE-GSE-201604.csv')
-
 df = df.fillna('') #fill all null values with empty space
 
 #Give us classes that have actual physical meeting locations, e.g. NOT in the 
@@ -41,5 +41,9 @@ print(
 )
 
 #TODO: Range of times for class. (Morning, Afternoon, Evening)
+#Output to txt file.
 
 #valid_classes = df.loc[~df['Meeting_Location_1'].isin(meeting_location_values)]
+
+if __name__=="main":
+    main()
