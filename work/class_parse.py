@@ -5,9 +5,13 @@ library for csv file manipulation.
 """
 
 import pandas as pd
+import numpy as np
 
 quarters = ['01', '02', '03', '04']
 years = ['2013', '2014', '2015', '2016']
+master_classes = []
+master_enrls = [] 
+master_auths = []
 
 for year in years:
     for quarter in quarters:
@@ -38,14 +42,27 @@ for year in years:
         avg_auth = int(round((xlist_auth_size + reg_auth_size) /  (xlist_count +  reg_count)))
         avg_cap =  (xlist_actual_enrl + reg_actual_enrl) / (xlist_auth_size + reg_auth_size)
 
+        # Append to master counts
+        master_classes.append(tot_class)
+        master_enrls.append(xlist_actual_enrl + reg_actual_enrl)
+        master_auths.append(xlist_auth_size + reg_auth_size)
+
 
         print('\n','=============================================================','\n'
             " Total classes for {0}: {1}".format(current_term, tot_class),'\n'
             " Average classroom capacity: {0}".format(avg_auth),'\n',
-            "Average enrollment: {0}".format(avg_enrl),'\n',
-            "Average capacity: {0}".format(avg_cap),'\n',
+            "Average enrollment per class: {0}".format(avg_enrl),'\n',
+            "Average capacity per classroom: {0}".format(avg_cap),'\n',
             '=============================================================','\n'
         )
+
+print('\n','=============================================================','\n'
+    " Average number of classes for ALL TERMS: {0}".format(np.mean(master_classes)),'\n'
+    " Average classroom capacity for ALL TERMS: {0}".format(sum(master_auths)/sum(master_classes)),'\n',
+    "Average enrollment per class for ALL TERMS: {0}".format(sum(master_enrls)/sum(master_classes)),'\n',
+    "Average capacity per classroom for ALL TERMS: {0}".format(sum(master_enrls)/sum(master_auths)),'\n',
+    '=============================================================','\n'
+)
 
 #TODO: Range of times for class. (Morning, Afternoon, Evening)
 #Output to txt file.
