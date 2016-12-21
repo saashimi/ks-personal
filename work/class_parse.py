@@ -18,7 +18,7 @@ for year in years:
         current_term = year + quarter
 
         #pd.set_option('display.max_rows', 0)
-        df = pd.read_csv('CLE-GSE-{0}.csv'.format(current_term))
+        df = pd.read_csv('CLE-SPH-{0}.csv'.format(current_term))
         df = df.fillna('') #fill all null values with empty space
 
         #Give us classes that have actual physical meeting locations, e.g. NOT in the 
