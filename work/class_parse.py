@@ -26,10 +26,14 @@ for year in years:
         meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
         df = df[~df['Meeting_Location_1'].isin(meeting_location_values)]
 
+        
         # Group the crosslisted classes and calculate their sums.
-        xlist_count = len(df.groupby('Crosslist_ID').Actual_Enrl) - 1
+        xlist = df.groupby('Crosslist_ID').Actual_Enrl
+
+        xlist_count = len(xlist) - 1
         xlist_actual_enrl = (df.groupby('Crosslist_ID').Actual_Enrl.sum())[0]
         xlist_auth_size = (df.groupby('Crosslist_ID').Auth_Size.sum())[0]
+
 
         # Count the regular classes and calculate their sums.
         reg_count = df.shape[0]
