@@ -6,9 +6,11 @@ library for csv file manipulation.
 
 import pandas as pd
 import numpy as np
+import re
 
 quarters = ['01', '02', '03', '04']
 years = ['2013', '2014', '2015', '2016']
+days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
 master_classes = []
 master_enrls = [] 
 master_auths = []
@@ -17,8 +19,7 @@ for year in years:
     for quarter in quarters:
         current_term = year + quarter
 
-        #pd.set_option('display.max_rows', 0)
-        df = pd.read_csv('CLE-SPH-{0}.csv'.format(current_term))
+        df = pd.read_csv('CLE-GSE-{0}.csv'.format(current_term))
         df = df.fillna('') #fill all null values with empty space
 
         #Give us classes that have actual physical meeting locations, e.g. NOT in the 
@@ -26,10 +27,29 @@ for year in years:
         meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
         df = df[~df['Meeting_Location_1'].isin(meeting_location_values)]
 
+        #Clean meeting times
+        split_times = []
+        meeting_times = df.Meeting_Time_1.tolist()
+        day_list = []
+        for time in meeting_times:
+            split_times.append(re.findall(r"[\w]+", time))
+        for list_ in split_times:
+            try:
+                day = list_[0]
+                if 'SU' in day:
+                    print('Sunday condition!')
+                else:
+                    for char in day:
+                        day_list.append(char)
+            except:
+                print('No day given in list!')
+                continue
+
+            #start_time = list_[1]
+
         
         # Group the crosslisted classes and calculate their sums.
         xlist = df.groupby('Crosslist_ID').Actual_Enrl
-
         xlist_count = len(xlist) - 1
         xlist_actual_enrl = (df.groupby('Crosslist_ID').Actual_Enrl.sum())[0]
         xlist_auth_size = (df.groupby('Crosslist_ID').Auth_Size.sum())[0]
@@ -56,8 +76,11 @@ for year in years:
             " Total classes for {0}: {1}".format(current_term, tot_class),'\n'
             " Average classroom capacity: {0}".format(avg_auth),'\n',
             "Average enrollment per class: {0}".format(avg_enrl),'\n',
-            "Average capacity per classroom: {0}".format(avg_cap),'\n',
-            '=============================================================','\n'
+            "Average capacity per classroom: {0}".format(avg_cap)
+        )
+        for day in days:
+            print(" ", day, ":", day_list.count(day))
+        print(' =============================================================','\n'
         )
 
 print('\n','=============================================================','\n'
