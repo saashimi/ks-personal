@@ -31,21 +31,23 @@ for year in years:
         split_times = []
         meeting_times = df.Meeting_Time_1.tolist()
         day_list = []
+        start_times = []
         for time in meeting_times:
             split_times.append(re.findall(r"[\w]+", time))
         for list_ in split_times:
             try:
                 day = list_[0]
+                start_time = list_[1]
+                start_times.append(start_time)
                 if 'SU' in day:
                     print('Sunday condition!')
                 else:
                     for char in day:
                         day_list.append(char)
             except:
-                print('No day given in list!')
+                print('WARNING: A class is missing a date/time!')
                 continue
 
-            #start_time = list_[1]
 
         
         # Group the crosslisted classes and calculate their sums.
@@ -53,7 +55,6 @@ for year in years:
         xlist_count = len(xlist) - 1
         xlist_actual_enrl = (df.groupby('Crosslist_ID').Actual_Enrl.sum())[0]
         xlist_auth_size = (df.groupby('Crosslist_ID').Auth_Size.sum())[0]
-
 
         # Count the regular classes and calculate their sums.
         reg_count = df.shape[0]
@@ -65,6 +66,22 @@ for year in years:
         avg_enrl = int(round((xlist_actual_enrl + reg_actual_enrl) / (xlist_count +  reg_count)))
         avg_auth = int(round((xlist_auth_size + reg_auth_size) /  (xlist_count +  reg_count)))
         avg_cap =  (xlist_actual_enrl + reg_actual_enrl) / (xlist_auth_size + reg_auth_size)
+
+        morning = []
+        afternoon = []
+        evening = []
+        for time in start_times:
+            time = int(time)
+            if time > 700 and time < 1200:
+                morning.append(time)
+            if time >= 1200 and time < 1700:
+                afternoon.append(time)
+            if time >1700:
+                evening.append(time)
+        print("Morning classes: ", len(morning)/len(start_times),'\n'
+            "Afternoon classes: ", len(afternoon)/len(start_times), '\n'
+            "Evening classes: ", len(evening)/len(start_times))
+
 
         # Append to master counts
         master_classes.append(tot_class)
