@@ -14,6 +14,10 @@ days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
 master_classes = []
 master_enrls = [] 
 master_auths = []
+master_times = []
+master_morning = []
+master_afternoon = []
+master_evening = []
 
 for year in years:
     for quarter in quarters:
@@ -38,6 +42,7 @@ for year in years:
             try:
                 day = list_[0]
                 start_time = list_[1]
+                master_times.append(start_time)
                 start_times.append(start_time)
                 if 'SU' in day:
                     print('Sunday condition!')
@@ -45,7 +50,7 @@ for year in years:
                     for char in day:
                         day_list.append(char)
             except:
-                print('WARNING: A class is missing a date/time!')
+                print('WARNING: A class is missing a date/time! and will not be counted!')
                 continue
 
 
@@ -74,10 +79,13 @@ for year in years:
             time = int(time)
             if time > 700 and time < 1200:
                 morning.append(time)
+                master_morning.append(time)
             if time >= 1200 and time < 1700:
                 afternoon.append(time)
+                master_afternoon.append(time)
             if time >1700:
                 evening.append(time)
+                master_evening.append(time)
         print("Morning classes: ", len(morning)/len(start_times),'\n'
             "Afternoon classes: ", len(afternoon)/len(start_times), '\n'
             "Evening classes: ", len(evening)/len(start_times))
@@ -105,7 +113,10 @@ print('\n','=============================================================','\n'
     " Average classroom capacity for ALL TERMS: {0}".format(sum(master_auths)/sum(master_classes)),'\n',
     "Average enrollment per class for ALL TERMS: {0}".format(sum(master_enrls)/sum(master_classes)),'\n',
     "Average capacity per classroom for ALL TERMS: {0}".format(sum(master_enrls)/sum(master_auths)),'\n',
-    '=============================================================','\n'
+    "Morning classes: ", len(master_morning)/len(master_times),'\n',
+    "Afternoon classes: ", len(master_afternoon)/len(master_times), '\n',
+    "Evening classes: ", len(master_evening)/len(master_times), '\n',
+'=============================================================','\n'
 )
 
 #TODO: Range of times for class. (Morning, Afternoon, Evening)
