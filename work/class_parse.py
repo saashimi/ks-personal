@@ -115,23 +115,15 @@ def main():
     for year in years:
         for quarter in quarters:
             current_term = year + quarter
-
-            df = pd.read_csv('CLE-GSE-{0}.csv'.format(current_term))
+            df = pd.read_csv('CLE-SPH-{0}.csv'.format(current_term))
             df = df.fillna('') #fill all null values with empty space
-
             #Give us classes that have actual physical meeting locations, e.g. NOT in the 
             #following locations:
             meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
             df = df[~df['Meeting_Location_1'].isin(meeting_location_values)]
-
             compile_reg_classes_and_xlist_classes(df, current_term)
             print_summary()
 
-
-
-#TODO: Range of times for class. (Morning, Afternoon, Evening)
-#Output to txt file.
-#valid_classes = df.loc[~df['Meeting_Location_1'].isin(meeting_location_values)]
 
 if __name__=="__main__":
     main()
