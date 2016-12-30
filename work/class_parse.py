@@ -24,14 +24,6 @@ def dept_control_filter(df_cleaned_enrl, df_class_raw):
     dept_controlled_rooms = df_class_raw.Meeting_Location.tolist()
     sort_dept_controlled_rooms = []
     sort_gen_pool_rooms = []
-    
-    """
-    depts = ['ANTH', 'ARCH', 'ART', 'ATH', 'BA', 'BIO', 'BI', 'CE', 'CE/ME', 'CECS',  
-    'CHEM', 'CH', 'CSE', 'CS',  'EAS', 'ED', 'ECON', 'ECE', 'EMGT', 'ENG', 'ESL', 'ESM', 
-    'ESR', 'EOP', 'FL', 'GEOG', 'GEOL', 'HST', 'HON', 'HPE', 'INTL', 'LING', 'IRS', 'ISS', 'MB', 'ME/CE', 'ME',
-    'MCECS', 'MTH', 'MUS', 'NASCC', 'NAS', 'PE', 'PHY', 'PSY', 'PSC', 'SCI', 'SCH', 
-    'SOC', 'SSW', 'SW', 'SPHR', 'SYSC', 'TA', 'UPA', 'USP', 'UNST', 'WS', 'XS-DO', 'XS']
-    """
     rooms = df_cleaned_enrl.Meeting_Location_1.tolist()
     for room in rooms:
         if room in dept_controlled_rooms:
@@ -39,14 +31,9 @@ def dept_control_filter(df_cleaned_enrl, df_class_raw):
         else: 
             sort_gen_pool_rooms.append(room)
 
-
     print(' Number of Department controlled classroom used: {0}'.format(len(sort_dept_controlled_rooms)),'\n'
         ' Number of General pool classrooms used: {0}'.format(len(sort_gen_pool_rooms)),'\n'
-         '=============================================================','\n'
-
-        )
-
-
+        ' =============================================================','\n')
 
 
 def clean_day_time(df_day_time):
@@ -98,8 +85,6 @@ def clean_day_time(df_day_time):
     " Evening classes: {:.0%}".format(len(evening)/len(start_times)))
 
 
-
-
 def compile_reg_classes_and_xlist_classes(df_reg_xlist, df_class_raw, current_term_in):
     """
     Group crosslisted classes and calculate required statistics.
@@ -110,23 +95,22 @@ def compile_reg_classes_and_xlist_classes(df_reg_xlist, df_class_raw, current_te
     xlist_auth_size = (df_reg_xlist.groupby('Crosslist_ID').Auth_Size.sum())[0]
 
     # Count the regular classes and calculate their sums.
-    reg_count = df_reg_xlist.shape[0]
+    total_count = df_reg_xlist.shape[0]
     reg_actual_enrl = df_reg_xlist.Actual_Enrl.sum()
     reg_auth_size = df_reg_xlist.Auth_Size.sum()
 
     # Calculate necessary statistics.
-    tot_class = reg_count
-    avg_enrl = int(round((xlist_actual_enrl + reg_actual_enrl) / (reg_count)))
-    avg_auth = int(round((xlist_auth_size + reg_auth_size) /  (reg_count)))
+    avg_enrl = int(round((xlist_actual_enrl + reg_actual_enrl) / (total_count)))
+    avg_auth = int(round((xlist_auth_size + reg_auth_size) /  (total_count)))
     avg_cap =  (xlist_actual_enrl + reg_actual_enrl) / (xlist_auth_size + reg_auth_size)    
 
     # Append to master counts
-    master_classes.append(tot_class)
+    master_classes.append(total_count)
     master_enrls.append(xlist_actual_enrl + reg_actual_enrl)
     master_auths.append(xlist_auth_size + reg_auth_size)
 
     print('\n','=============================================================','\n'
-    " Total classes for {0}: {1}".format(current_term_in, tot_class),'\n'
+    " Total classes for {0}: {1}".format(current_term_in, total_count),'\n'
     " Average classroom capacity: {0}".format(avg_auth),'\n',
     "Average enrollment per class: {0}".format(avg_enrl),'\n',
     "Average capacity per classroom: {:.0%}".format(avg_cap)
@@ -143,14 +127,18 @@ def print_summary():
         "Average capacity per classroom for ALL TERMS: {:.0%}".format(sum(master_enrls)/sum(master_auths)),'\n',
         "Morning classes: {:.0%}".format(len(master_morning)/len(master_times)),'\n',
         "Afternoon classes: {:.0%}".format(len(master_afternoon)/len(master_times)), '\n',
-        "Evening classes: {:.0%}".format(len(master_evening)/len(master_times)), '\n',
+        "Evening classes: {:.0%}".format(len(master_evening)/len(master_times)), 
     )
+    print('=============================================================','\n')
+
 
 def main():
+    school = input("Enter desired GSE or SPH for evaluation >>> ")
+
     for year in years:
         for quarter in quarters:
             current_term = year + quarter
-            df_enrl = pd.read_csv('enrollment_data/CLE-SPH-{0}.csv'.format(current_term))
+            df_enrl = pd.read_csv('enrollment_data/CLE-{0}-{1}.csv'.format(school, current_term))
             df_enrl = df_enrl.fillna('') #fill all null values with empty space
             
             #Give us classes that have actual physical meeting locations, e.g. NOT 
@@ -167,7 +155,6 @@ def main():
             compile_reg_classes_and_xlist_classes(df_enrl, df_class, current_term)
 
     print_summary()
-
 
 if __name__=="__main__":
     main()
