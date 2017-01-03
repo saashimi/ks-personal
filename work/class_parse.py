@@ -89,13 +89,17 @@ def compile_reg_classes_and_xlist_classes(df_reg_xlist, df_class_raw, current_te
     """
     Group crosslisted classes and calculate required statistics.
     """
+    # Count the crosslisted classes separately.
     xlist = df_reg_xlist.groupby('Crosslist_ID').Actual_Enrl
     xlist_count = len(xlist) - 1
     xlist_actual_enrl = (df_reg_xlist.groupby('Crosslist_ID').Actual_Enrl.sum())[0]
     xlist_auth_size = (df_reg_xlist.groupby('Crosslist_ID').Auth_Size.sum())[0]
 
     # Count the regular classes and calculate their sums.
-    total_count = df_reg_xlist.shape[0]
+    df_reg_xlist = df_reg_xlist[df_reg_xlist['Crosslist_ID'] == ''] 
+    # Isolates non-crosslisted classes
+
+    total_count = df_reg_xlist.shape[0] + xlist_count
     reg_actual_enrl = df_reg_xlist.Actual_Enrl.sum()
     reg_auth_size = df_reg_xlist.Auth_Size.sum()
 
@@ -145,7 +149,7 @@ def main():
             #Offcampus, TBA, web-based, or have empty fields.
             meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
             df_enrl = df_enrl[~df_enrl['Meeting_Location_1'].isin(meeting_location_values)]
-            
+
             df_class = pd.read_csv('classroom_data/dept_control_list-{0}.csv'.format(current_term))
             df_class = df_class.fillna('')
             df_class["Meeting_Location"] = df_class["Room"] + " " + df_class["Room.1"]
