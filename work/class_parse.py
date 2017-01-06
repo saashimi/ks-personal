@@ -8,9 +8,13 @@ import pandas as pd
 import numpy as np
 import re
 
-quarters = ['01', '02', '03', '04']
+#quarters = ['01', '02', '03', '04']
+#years = ['2013', '2014', '2015', '2016']
+#days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
+
+quarters = ['04']
 years = ['2013', '2014', '2015', '2016']
-days = ['M', 'T', 'W', 'R', 'F', 'SU', 'S']
+days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
 
 master_classes = []
 master_enrls = [] 
