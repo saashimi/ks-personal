@@ -8,12 +8,9 @@ import pandas as pd
 import numpy as np
 import re
 
-#quarters = ['01', '02', '03', '04']
-#years = ['2013', '2014', '2015', '2016']
-#days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
 
 quarters = ['04']
-years = ['2013', '2014', '2015', '2016']
+years = ['2016']
 days = ['M', 'T', 'W', 'R', 'F', 'S', 'SU']
 
 master_classes = []
@@ -23,6 +20,7 @@ master_times = []
 master_morning = []
 master_afternoon = []
 master_evening = []
+
 
 def dept_control_filter(df_cleaned_enrl, df_class_raw):
     dept_controlled_rooms = df_class_raw.Meeting_Location.tolist()
@@ -39,6 +37,8 @@ def dept_control_filter(df_cleaned_enrl, df_class_raw):
         ' Number of General pool classrooms used: {0}'.format(len(sort_gen_pool_rooms)),'\n'
         ' =============================================================','\n')
 
+def calc_hours():
+    pass
 
 def clean_day_time(df_day_time):
     """
@@ -154,13 +154,13 @@ def main():
             meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
             df_enrl = df_enrl[~df_enrl['Meeting_Location_1'].isin(meeting_location_values)]
 
-            df_class = pd.read_csv('classroom_data/dept_control_list-{0}.csv'.format(current_term))
-            df_class = df_class.fillna('')
-            df_class["Meeting_Location"] = df_class["Room"] + " " + df_class["Room.1"]
+            ###df_class = pd.read_csv('classroom_data/dept_control_list-{0}.csv'.format(current_term))
+            ###df_class = df_class.fillna('')
+            ###df_class["Meeting_Location"] = df_class["Room"] + " " + df_class["Room.1"]
             #Room is Building Name, Room.1 is Room Number
             #df_joined = pd.merge(df_enrl, df_class, left_on=df_enrl.Meeting_Location_1, right_on=df_class.Meeting_Location, how='inner')
 
-            compile_reg_classes_and_xlist_classes(df_enrl, df_class, current_term)
+            ###compile_reg_classes_and_xlist_classes(df_enrl, df_class, current_term)
 
     print_summary()
 
