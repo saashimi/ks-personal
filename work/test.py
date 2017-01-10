@@ -52,7 +52,7 @@ xlist = df[df['Crosslist_ID'] != '']
 xlist_operations = {'Actual_Enrl' : 'sum', 'Auth_Size' : 'max'}
 xlist = xlist.groupby('Crosslist_ID', as_index=False).agg(xlist_operations)
 
-print(xlist)
+#print(xlist)
 
 df_reg_class = aggregate(reg_class)
 #df_xlist = aggregate(xlist)
@@ -62,7 +62,5 @@ df_reg_class = aggregate(reg_class)
 #cleaned_df = pd.concat(dfs)
 
 
-#output = cleaned_df.groupby('Meeting_Location_1').count()
-#print(output)
-
-#print(output)
+output = df_reg_class.groupby('Meeting_Location_1').count()
+print(output)
