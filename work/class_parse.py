@@ -1,7 +1,9 @@
 import pandas as pd
 import re
+import datetime
 
-pd.options.mode.chained_assignment = None
+#pd.options.mode.chained_assignment = None
+current_term = 201604
 
 def aggregate(df_in):
 # Aggregate arithmetic operations:
@@ -18,24 +20,36 @@ def aggregate(df_in):
     return df_in
 
 
-df = pd.read_csv('enrollment_data/CLE-GSE-201604.csv')
+df = pd.read_csv('classroom_data/PSU_master_classroom.csv')
 df = df.fillna('')
 
-# Clean for meeting at physical campus locations:
-meeting_location_values = ['OFFCAM', 'TBA', 'WEB', '']
-df = df[~df['Meeting_Location_1'].isin(meeting_location_values)]
+#Clean for 201604 Data:
+terms = ['201604']
+df = df[df['Term'].isin(terms)]
+
+df_classes = pd.read_csv('enrollment_data/CLE-GSE-{0}.csv'.format(current_term))
+df_classes['Class_'] = df_classes['Subj'] + " " + df_classes['Course'] 
+valid_class_list = set(df_classes['Class_'].tolist())
+
+df = df[df['Class'].isin(valid_class_list)]
+
+
+#df_joined = pd.merge(df, df_classes, left_on=df['Class'], right_on=df_classes['Class_'], how='inner')
 
 # Split Meeting times into Days of the week, Start time, and End time
 # Regex searches
-df['Days'] = df['Meeting_Time_1'].str.extract('([^\s]+)', expand=True)
-df['Start_Time'] = df['Meeting_Time_1'].str.extract('(?<= )(.*)(?=-)', expand=True)
-df['Start_Time'] = df['Start_Time'].astype(int)
-df['End_Time'] = df['Meeting_Time_1'].str.extract('((?<=-).*$)', expand=True)
-df['End_Time'] = df['End_Time'].astype(int)
+df['Days'] = df['Meeting_Times'].str.extract('([^\s]+)', expand=True)
+df['Start_Time'] = df['Meeting_Times'].str.extract('(?<= )(.*)(?=-)', expand=True)
+df['End_Time'] = df['Meeting_Times'].str.extract('((?<=-).*$)', expand=True)
+#df['Start_Time'] = '{0}:{1}'.format(df['Start_Time'][:-2], df['Start_Time'][-2:])
+#TODO: Convert string to datetime
 
-# Create new columns based on relevant data
-df['Class_Hours'] = (df['End_Time'] - df['Start_Time'])/60.
-df['%_Capacity'] = df['%_Capacity'].astype(float)
+
+"""
+for time in df['Start_Time']:
+    time = datetime.datetime.strptime(time, "%H:%M")
+"""
+
 
 # Calculate number of days per week and treat Sunday condition
 for row in df['Days']:
@@ -45,22 +59,5 @@ for row in df['Days']:
     else:
         df['Days_Per_Week'] = df['Days'].str.len()
 
-df['Weekly_Class_Hours'] = df['Class_Hours'] * df['Days_Per_Week']
 
-reg_class = df[df['Crosslist_ID'] == ''] 
-xlist = df[df['Crosslist_ID'] != '']
-xlist_operations = {'Actual_Enrl' : 'sum', 'Auth_Size' : 'max'}
-xlist = xlist.groupby('Crosslist_ID', as_index=False).agg(xlist_operations)
-
-#print(xlist)
-
-df_reg_class = aggregate(reg_class)
-#df_xlist = aggregate(xlist)
-
-
-#dfs = [df_reg_class, df_xlist]
-#cleaned_df = pd.concat(dfs)
-
-
-output = df_reg_class.groupby('Optimal_Size').count()
-print(output)
+print(df)
