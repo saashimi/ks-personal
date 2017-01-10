@@ -49,16 +49,17 @@ df['Weekly_Class_Hours'] = df['Class_Hours'] * df['Days_Per_Week']
 
 reg_class = df[df['Crosslist_ID'] == ''] 
 xlist = df[df['Crosslist_ID'] != '']
-xlist_operations = {'Actual_Enrl' : 'sum'}
-xlist.groupby('Crosslist_ID').agg(xlist_operations)
+xlist_operations = {'Actual_Enrl' : 'sum', 'Auth_Size' : 'max'}
+xlist = xlist.groupby('Crosslist_ID', as_index=False).agg(xlist_operations)
 
 print(xlist)
+
 df_reg_class = aggregate(reg_class)
-df_xlist = aggregate(xlist)
+#df_xlist = aggregate(xlist)
 
 
-dfs = [df_reg_class, df_xlist]
-cleaned_df = pd.concat(dfs)
+#dfs = [df_reg_class, df_xlist]
+#cleaned_df = pd.concat(dfs)
 
 
 #output = cleaned_df.groupby('Meeting_Location_1').count()
