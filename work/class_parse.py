@@ -31,7 +31,7 @@ df_classes = pd.read_csv('enrollment_data/CLE-GSE-{0}.csv'.format(current_term))
 df_classes['Class_'] = df_classes['Subj'] + " " + df_classes['Course'] 
 valid_class_list = set(df_classes['Class_'].tolist())
 
-df = df[df['Class'].isin(valid_class_list)]
+df = df.loc[df['Class'].isin(valid_class_list)]
 
 
 #df_joined = pd.merge(df, df_classes, left_on=df['Class'], right_on=df_classes['Class_'], how='inner')
@@ -39,16 +39,15 @@ df = df[df['Class'].isin(valid_class_list)]
 # Split Meeting times into Days of the week, Start time, and End time
 # Regex searches
 df['Days'] = df['Meeting_Times'].str.extract('([^\s]+)', expand=True)
+df['Start_Date'] = df['Meeting_Dates'].str.extract('^(.*?)-', expand=True)
+df['End_Date'] = df['Meeting_Dates'].str.extract('((?<=-).*$)', expand=True)
 df['Start_Time'] = df['Meeting_Times'].str.extract('(?<= )(.*)(?=-)', expand=True)
 df['End_Time'] = df['Meeting_Times'].str.extract('((?<=-).*$)', expand=True)
 #df['Start_Time'] = '{0}:{1}'.format(df['Start_Time'][:-2], df['Start_Time'][-2:])
-#TODO: Convert string to datetime
+########TODO: Convert string to datetime
 
-
-"""
-for time in df['Start_Time']:
-    time = datetime.datetime.strptime(time, "%H:%M")
-"""
+# Avoid classes that only occur on a single day
+df = df.loc[df['Start_Date'] != df['End_Date']]
 
 
 # Calculate number of days per week and treat Sunday condition
@@ -59,5 +58,12 @@ for row in df['Days']:
     else:
         df['Days_Per_Week'] = df['Days'].str.len()
 
+df['%_Capacity'] = df['Actual_Enrl'].astype(float) / df['Max_Enrl'].astype(float) 
+df['Actual_Enrl'] = df['Actual_Enrl'].astype(int)
 
-print(df)
+x_list_operations = {'Actual_Enrl' : 'sum', 'Xlst_Max_Enrl' : 'max'}
+df_xlist = df.groupby('Xlst', as_index=False).agg(x_list_operations)
+print(df_xlist)
+
+
+print(df[['Class', 'ROOM', '%_Capacity', 'Xlst', 'Start_Date', 'End_Date', 'Days', 'Actual_Enrl']])
