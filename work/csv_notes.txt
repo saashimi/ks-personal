@@ -19,21 +19,5 @@ Need to concatenate Room and Room.1
 df["Meeting_Location"] = df["Room"] + " " + df["Room.1"]
 >>> result = pd.merge(df2, df, left_on=df2.Meeting_Location_1, right_on=df.Meeting_Location, how='inner')
 
+#df['Xlst_Max_Enrl'] = df['Xlst_Max_Enrl'].apply(lambda x: x if (x != '') else '0')
 
- ============================================================= 
- Total classes for 201604: 148 
- Average classroom capacity: 39 
- Average enrollment per class: 25 
- Average capacity per classroom: 65%
-WARNING: A class is missing a date/time! and will not be counted!
-  M : 19%
-  T : 27%
-  W : 23%
-  R : 20%
-  F : 12%
-  SU : 0%
-  S : 0%
- Morning classes: 23% 
- Afternoon classes: 52% 
- Evening classes: 23%
- =============================================================
