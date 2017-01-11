@@ -19,4 +19,5 @@ Need to concatenate Room and Room.1
 df["Meeting_Location"] = df["Room"] + " " + df["Room.1"]
 >>> result = pd.merge(df2, df, left_on=df2.Meeting_Location_1, right_on=df.Meeting_Location, how='inner')
 
+#df['Xlst_Max_Enrl'] = df['Xlst_Max_Enrl'].apply(lambda x: x if (x != '') else '0')
 

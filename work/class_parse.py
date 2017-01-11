@@ -1,28 +1,9 @@
 import pandas as pd
 import re
+import numpy as np
 import datetime
 
 #pd.options.mode.chained_assignment = None
-
-def aggregate(df_agg):
-    # Aggregate arithmetic operations:
-    #df_agg['Weekly_Class_Hours'] = df_agg['Weekly_Class_Hours'].astype(float)
-    df_agg['Room_Capacity'] = df_agg['Room_Capacity'].astype(float)
-    df_agg['Actual_Enrl'] = df_agg['Actual_Enrl'].astype(float)
-
-    operations = ({'Weekly_Class_Hours' : 'sum', 
-                   'Room_Capacity' : 'mean', 
-                   'Actual_Enrl' : 'mean',})
-    df_agg = df_agg.groupby('ROOM', as_index=False).agg(operations)
-
-    # Calculate hourly utilizations
-    df_agg['Class_Hour_Utilization'] = (df_agg['Weekly_Class_Hours']/40.0).astype(float)
-
-    # Round optimal size to the nearest 5
-    df_agg['Optimal_Size'] = 5 * round((df_agg['Actual_Enrl'] * 1.25)/5)
-    # Optimal size should be a minimum of 10 seats
-    df_agg.loc[df_agg['Optimal_Size'] < 10.0, 'Optimal_Size'] = 10.0
-    return df_agg
 
 def format_df_reg(df_reg):
     df_reg = df_reg.loc[df_reg['Xlst'] == '']
@@ -42,7 +23,38 @@ def merge_xlist(df_xl):
                       'Weekly_Class_Hours' : 'max',})
     df_xl = df_xl.groupby('Xlst', as_index=False).agg(xl_operations)
     df_xl['%_Capacity'] = df_xl['Actual_Enrl'] / df_xl['Room_Capacity'].astype(int)
+    
     return df_xl
+
+def aggregate(df_agg):
+    # Aggregate arithmetic operations:
+    df_agg['Room_Capacity'] = df_agg['Room_Capacity'].astype(float)
+    df_agg['Actual_Enrl'] = df_agg['Actual_Enrl'].astype(float)
+
+    operations = ({'Weekly_Class_Hours' : 'sum', 
+                   'Room_Capacity' : 'mean', 
+                   'Actual_Enrl' : 'mean',})
+    df_agg = df_agg.groupby('ROOM', as_index=False).agg(operations)
+
+    # Calculate hourly utilizations
+    df_agg['Class_Hour_Utilization'] = (df_agg['Weekly_Class_Hours']/40.0).astype(float)
+
+    # Round optimal size to the nearest 5
+    df_agg['Optimal_Size'] = 5 * round((df_agg['Actual_Enrl'] * 1.25)/5)
+    # Optimal size should be a minimum of 10 seats
+    df_agg.loc[df_agg['Optimal_Size'] < 10.0, 'Optimal_Size'] = 10.0
+    return df_agg
+
+def right_sizing(df_rs):
+    growth_factor = 0.01 * 3 # 1% annual over three years
+    rs_operations = ({'Class_Hour_Utilization' : 'sum'})
+    df_rs = df_rs.groupby('Optimal_Size', as_index=False).agg(rs_operations)
+    df_rs['Calibrated_Demand'] = df_rs['Class_Hour_Utilization'] + growth_factor
+    # Round up to the nearest integer
+    df_rs['Qty_Classrooms'] = np.ceil(df_rs['Calibrated_Demand'])
+    df_rs['Qty_Seats'] = df_rs['Optimal_Size'] * df_rs['Qty_Classrooms']
+
+    return df_rs
 
 def main():
     current_term = 201604
@@ -87,18 +99,14 @@ def main():
     df['Actual_Enrl'] = df['Actual_Enrl'].astype(int)
     df['Weekly_Class_Hours'] = df['Duration_Hr'] * df['Days_Per_Week']
 
-
-    ### This is a useful lambda example
-    #df['Xlst_Max_Enrl'] = df['Xlst_Max_Enrl'].apply(lambda x: x if (x != '') else '0')
-    ####
-
-
     df_reg = format_df_reg(df)
     df_xlist = merge_xlist(df)
     df_combined = aggregate(pd.concat([df_reg, df_xlist]))
-
-    summary = df_combined.groupby('Optimal_Size').size()
-    print(summary)
+    
+    df_final = right_sizing(df_combined)
+    print(df_final)
+    print("Total Number of Classrooms (Projected): ", df_final['Qty_Classrooms'].sum())
+    print("Total Number of Seats (Projected): ", df_final['Qty_Seats'].sum())
 
 if __name__=='__main__':
     main()
