@@ -42,13 +42,13 @@ df['Days'] = df['Meeting_Times'].str.extract('([^\s]+)', expand=True)
 df['Start_Date'] = df['Meeting_Dates'].str.extract('^(.*?)-', expand=True)
 df['End_Date'] = df['Meeting_Dates'].str.extract('((?<=-).*$)', expand=True)
 df['Start_Time'] = df['Meeting_Times'].str.extract('(?<= )(.*)(?=-)', expand=True)
+df['Start_Time'] = pd.to_datetime(df['Start_Time'], format='%H%M')
 df['End_Time'] = df['Meeting_Times'].str.extract('((?<=-).*$)', expand=True)
-#df['Start_Time'] = '{0}:{1}'.format(df['Start_Time'][:-2], df['Start_Time'][-2:])
-########TODO: Convert string to datetime
+df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H%M')
+df['Duration_Hr'] = ((df['End_Time'] - df['Start_Time']).dt.seconds)/3600
 
 # Avoid classes that only occur on a single day
 df = df.loc[df['Start_Date'] != df['End_Date']]
-
 
 # Calculate number of days per week and treat Sunday condition
 for row in df['Days']:
@@ -66,4 +66,4 @@ df_xlist = df.groupby('Xlst', as_index=False).agg(x_list_operations)
 print(df_xlist)
 
 
-print(df[['Class', 'ROOM', '%_Capacity', 'Xlst', 'Start_Date', 'End_Date', 'Days', 'Actual_Enrl']])
+print(df[['Class', 'ROOM', '%_Capacity', 'Xlst', 'Start_Date', 'End_Date', 'Days', 'Actual_Enrl', 'Duration_Hr']])
