@@ -34,7 +34,6 @@ def format_df_reg(df_reg):
 
 def merge_xlist(df_xl):
     df_xl = df_xl.loc[df_xl['Xlst'] != '']
-    #df_xl['Weekly_Class_Hours'] = df_xl['Duration_Hr'] * df_xl['Days_Per_Week']
 
     # merge the crosslisted classes
     xl_operations = ({'ROOM' : 'max',
@@ -43,11 +42,7 @@ def merge_xlist(df_xl):
                       'Weekly_Class_Hours' : 'max',})
     df_xl = df_xl.groupby('Xlst', as_index=False).agg(xl_operations)
     df_xl['%_Capacity'] = df_xl['Actual_Enrl'] / df_xl['Room_Capacity'].astype(int)
-    #df_xl.drop('Xlst_Max_Enrl', axis=1, inplace=True)
     return df_xl
-
-
-
 
 def main():
     current_term = 201604
@@ -65,8 +60,6 @@ def main():
 
     df = df.loc[df['Class'].isin(valid_class_list)]
 
-
-    #df_joined = pd.merge(df, df_classes, left_on=df['Class'], right_on=df_classes['Class_'], how='inner')
 
     # Split Meeting times into Days of the week, Start time, and End time
     # Regex searches
