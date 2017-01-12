@@ -43,10 +43,18 @@ def aggregate(df_agg):
     df_agg['Optimal_Size'] = 5 * round((df_agg['Actual_Enrl'] * 1.25)/5)
     # Optimal size should be a minimum of 10 seats
     df_agg.loc[df_agg['Optimal_Size'] < 10.0, 'Optimal_Size'] = 10.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 60.0) & (df_agg['Optimal_Size'] < 75.0), 'Optimal_Size'] = 75.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 75.0) & (df_agg['Optimal_Size'] < 80.0), 'Optimal_Size'] = 80.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 80.0) & (df_agg['Optimal_Size'] < 100.0), 'Optimal_Size'] = 100.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 100.0) & (df_agg['Optimal_Size'] < 150.0), 'Optimal_Size'] = 150.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 150.0) & (df_agg['Optimal_Size'] < 200.0), 'Optimal_Size'] = 200.0
+    df_agg.loc[(df_agg['Optimal_Size'] > 200.0) & (df_agg['Optimal_Size'] < 220.0), 'Optimal_Size'] = 220.0  
+    df_agg.loc[(df_agg['Optimal_Size'] > 220.0) & (df_agg['Optimal_Size'] < 380.0), 'Optimal_Size'] = 380.0
+
     return df_agg
 
 def right_sizing(df_rs):
-    growth_factor = 0.01 * 3 # 1% annual over three years
+    growth_factor = 0.01 * 3 # 1% annual growth over three years
     rs_operations = ({'Class_Hour_Utilization' : 'sum'})
     df_rs = df_rs.groupby('Optimal_Size', as_index=False).agg(rs_operations)
     df_rs['Calibrated_Demand'] = df_rs['Class_Hour_Utilization'] + growth_factor
@@ -57,6 +65,9 @@ def right_sizing(df_rs):
     return df_rs
 
 def main():
+    school = input("Enter desired GSE or SPH for evaluation >>> ")
+
+
     current_term = 201604
     df = pd.read_csv('classroom_data/PSU_master_classroom.csv')
     df = df.fillna('')
@@ -65,13 +76,17 @@ def main():
     terms = ['201604']
     df = df[df['Term'].isin(terms)]
 
-    df_classes = pd.read_csv('enrollment_data/CLE-GSE-{0}.csv'.format(current_term))
+    
+    ### Comment out this block for General PSU Campus Snapshot
+    # Filter for desired school
+    df_classes = pd.read_csv('enrollment_data/CLE-{0}-{1}.csv'.format(school, current_term))
+    # Filter out PE classes
+    df_classes = df_classes.loc[df_classes['Schedule_Type_Desc'] != 'Activity']
     
     df_classes['Class_'] = df_classes['Subj'] + " " + df_classes['Course'] 
     valid_class_list = set(df_classes['Class_'].tolist())
-
     df = df.loc[df['Class'].isin(valid_class_list)]
-
+    ###
 
     # Split Meeting times into Days of the week, Start time, and End time
     # Regex searches
@@ -88,12 +103,11 @@ def main():
     df = df.loc[df['Start_Date'] != df['End_Date']]
 
     # Calculate number of days per week and treat Sunday condition
-    for row in df['Days']:
-        if 'SU' in row:
-            print('Sunday Condition!')
-            # ToDO: If sunday does come up, refactor code to address this.
-        else:
-            df['Days_Per_Week'] = df['Days'].str.len()
+    if 'SU' not in df['Days']:
+        df['Days_Per_Week'] = df['Days'].str.len()
+    else:
+        print('Sunday Condition!')
+        #ToDO: If sunday does come up, refactor code to address this.
 
     df['%_Capacity'] = df['Actual_Enrl'].astype(int) / df['Room_Capacity'].astype(int) 
     df['Actual_Enrl'] = df['Actual_Enrl'].astype(int)
@@ -103,10 +117,15 @@ def main():
     df_xlist = merge_xlist(df)
     df_combined = aggregate(pd.concat([df_reg, df_xlist]))
     
-    df_final = right_sizing(df_combined)
-    print(df_final)
-    print("Total Number of Classrooms (Projected): ", df_final['Qty_Classrooms'].sum())
-    print("Total Number of Seats (Projected): ", df_final['Qty_Seats'].sum())
 
+    df_final = right_sizing(df_combined)
+    
+    print('==============================================')
+    print(df_final)
+    print("Total Number of Classrooms Needed (Projected): ", df_final['Qty_Classrooms'].sum())
+    print("Total Number of Seats Needed (Projected): ", df_final['Qty_Seats'].sum())
+    print('==============================================')
+    
 if __name__=='__main__':
     main()
+    #print(df_combined.loc[df_combined['ROOM'] == 'NH 209'])
