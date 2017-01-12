@@ -76,7 +76,9 @@ def main():
     terms = ['201604']
     df = df[df['Term'].isin(terms)]
 
-
+    
+    ### Comment out this block for General PSU Campus Snapshot
+    # Filter for desired school
     df_classes = pd.read_csv('enrollment_data/CLE-{0}-{1}.csv'.format(school, current_term))
     # Filter out PE classes
     df_classes = df_classes.loc[df_classes['Schedule_Type_Desc'] != 'Activity']
@@ -84,7 +86,7 @@ def main():
     df_classes['Class_'] = df_classes['Subj'] + " " + df_classes['Course'] 
     valid_class_list = set(df_classes['Class_'].tolist())
     df = df.loc[df['Class'].isin(valid_class_list)]
-
+    ###
 
     # Split Meeting times into Days of the week, Start time, and End time
     # Regex searches
@@ -115,12 +117,15 @@ def main():
     df_xlist = merge_xlist(df)
     df_combined = aggregate(pd.concat([df_reg, df_xlist]))
     
+
     df_final = right_sizing(df_combined)
+    
     print('==============================================')
     print(df_final)
-    print("Total Number of Classrooms (Projected): ", df_final['Qty_Classrooms'].sum())
-    print("Total Number of Seats (Projected): ", df_final['Qty_Seats'].sum())
+    print("Total Number of Classrooms Needed (Projected): ", df_final['Qty_Classrooms'].sum())
+    print("Total Number of Seats Needed (Projected): ", df_final['Qty_Seats'].sum())
     print('==============================================')
-
+    
 if __name__=='__main__':
     main()
+    #print(df_combined.loc[df_combined['ROOM'] == 'NH 209'])
